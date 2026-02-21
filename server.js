@@ -2,67 +2,54 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
-// const path = require("path"); // Больше не нужен для API
+const dns = require("dns");
 
-const app = express();
+// ПРИНУДИТЕЛЬНО используем IPv4 (решает проблему Connection Timeout)
+dns.setDefaultResultOrder('ipv4first');
 
-// 1. Настройка CORS
-// Это позволит твоему сайту на Netlify делать запросы к этому серверу
+const app = express()
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// 2. УДАЛЯЕМ или КОММЕНТИРУЕМ раздачу статики
-// На Render нам не нужен билд React, так как он живет на Netlify
-/*
-app.use(express.static(path.join(__dirname, "client", "build")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
-*/
-
-// Простой проверочный маршрут, чтобы знать, что сервер жив
+// Проверочный маршрут
 app.get("/", (req, res) => {
-  res.send("Server is running!");
+  res.send("Parmani Tour API is running!");
 });
 
-// Маршрут бронирования тура
-app.post("/send-email", (req, res) => {
-  const { tourName, firstName, lastName, year, from, birthday, startDate, days, state, city, pincode, course, email } = req.body;
+// Настройка почты (ОДИН раз для всего сервера)
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // false для порта 587
+  auth: {
+    user: "parmanitour@gmail.com",
+    pass: "apllkepmhgkkiemo"
+  },
+  tls: {
+    rejectUnauthorized: false // Обход ограничений сети
+  },
+  connectionTimeout: 30000, // Даем серверу 30 секунд на попытку
+  greetingTimeout: 30000,
+  socketTimeout: 30000
+});
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Использование SSL
-    auth: {
-      user: "parmanitour@gmail.com",
-      pass: "apllkepmhgkkiemo" // Твой 16-значный App Password (без пробелов)
-    },
-    connectionTimeout: 10000, // 10 секунд на попытку
-  });
+// Маршрут бронирования
+app.post("/send-email", (req, res) => {
+  const { tourName, firstName, lastName, email, from, birthday, startDate, days, city, state } = req.body;
 
   const mailOptions = {
     from: "parmanitour@gmail.com",
     to: "parmanitour@gmail.com",
     subject: `New Booking: ${tourName}`,
-    text: `
-      Tour Name: ${tourName}
-      First Name: ${firstName}
-      Last Name: ${lastName}
-      Email: ${email}
-      From: ${from}
-      Birthday: ${birthday}
-      Start Date: ${startDate}
-      Days: ${days}
-      City/State: ${city}, ${state}
-    `
+    text: `Tour: ${tourName}\nName: ${firstName} ${lastName}\nEmail: ${email}\nFrom: ${from}\nStart: ${startDate}`
   };
-  
+
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log(error);
-      return res.status(500).send("Error: " + error.toString());
+      console.error("Nodemailer Error:", error);
+      return res.status(500).send("Error: " + error.message);
     }
     res.status(200).send("Email sent: " + info.response);
   });
@@ -72,40 +59,22 @@ app.post("/send-email", (req, res) => {
 app.post("/contact", (req, res) => {
   const { name, email, message } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Использование SSL
-    auth: {
-      user: "parmanitour@gmail.com",
-      pass: "apllkepmhgkkiemo" // Твой 16-значный App Password (без пробелов)
-    },
-    connectionTimeout: 10000, // 10 секунд на попытку
-  });
-
   const mailOptions = {
-    from: "parmanitour@gmail.com", 
+    from: "parmanitour@gmail.com",
     to: "parmanitour@gmail.com",
     subject: "New Contact Message",
-    text: `
-      Name: ${name}
-      Email: ${email}
-      Message: ${message}
-    `
+    text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log(error);
-      return res.status(500).send("Error: " + error.toString());
+      console.error("Nodemailer Error:", error);
+      return res.status(500).send("Error: " + error.message);
     }
-    res.status(200).send("Contact message sent: " + info.response);
+    res.status(200).send("Message sent: " + info.response);
   });
 });
 
-// 3. ПРАВИЛЬНЫЙ ПОРТ ДЛЯ RENDER
-// Render сам передает порт через переменную окружения PORT
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
