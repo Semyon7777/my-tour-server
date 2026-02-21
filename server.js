@@ -30,17 +30,17 @@ app.get("/", (req, res) => {
 app.post("/send-email", (req, res) => {
   const { tourName, firstName, lastName, year, from, birthday, startDate, days, state, city, pincode, course, email } = req.body;
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Использование SSL
-  auth: {
-    user: "parmanitour@gmail.com",
-    pass: "apllkepmhgkkiemo" // Твой 16-значный App Password (без пробелов)
-  },
-  connectionTimeout: 10000, // 10 секунд на попытку
-});
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Использование SSL
+    auth: {
+      user: "parmanitour@gmail.com",
+      pass: "apllkepmhgkkiemo" // Твой 16-значный App Password (без пробелов)
+    },
+    connectionTimeout: 10000, // 10 секунд на попытку
+  });
 
   const mailOptions = {
     from: "parmanitour@gmail.com",
@@ -74,10 +74,14 @@ app.post("/contact", (req, res) => {
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Использование SSL
     auth: {
       user: "parmanitour@gmail.com",
-      pass: "apllkepmhgkkiemo"
-    }
+      pass: "apllkepmhgkkiemo" // Твой 16-значный App Password (без пробелов)
+    },
+    connectionTimeout: 10000, // 10 секунд на попытку
   });
 
   const mailOptions = {
