@@ -20,19 +20,21 @@ app.get("/", (req, res) => {
 
 // Настройка почты (ОДИН раз для всего сервера)
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  // Прямой IP сервера smtp.gmail.com (IPv4)
+  host: "142.251.116.108", 
   port: 587,
-  secure: false, // false для порта 587
+  secure: false,
   auth: {
     user: "parmanitour@gmail.com",
     pass: "apllkepmhgkkiemo"
   },
   tls: {
-    rejectUnauthorized: false // Обход ограничений сети
+    // Обязательно указываем имя хоста, чтобы SSL сертификат прошел проверку
+    servername: "smtp.gmail.com",
+    rejectUnauthorized: false
   },
-  connectionTimeout: 30000, // Даем серверу 30 секунд на попытку
-  greetingTimeout: 30000,
-  socketTimeout: 30000
+  connectionTimeout: 30000,
+  greetingTimeout: 30000
 });
 
 // Маршрут бронирования

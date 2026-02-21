@@ -1,0 +1,23 @@
+[33mcommit 1920e5e7442948b5a56535759d777ad4bc90d253[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Semyon_test_accaunt <160015795+Semyon7777@users.noreply.github.com>
+Date:   Sat Feb 21 19:27:44 2026 +0400
+
+    Fix: force IPv4 and switch to port 587 for Render-Gmail connection
+
+[33mcommit 6e12601ad64f7fbe3e27b2a48b63dc7513ad4768[m
+Author: Semyon_test_accaunt <160015795+Semyon7777@users.noreply.github.com>
+Date:   Sat Feb 21 19:11:47 2026 +0400
+
+    Apply correct transporter settings to BOTH routes
+
+[33mcommit 836c061087682ba8970878e0afb7f75ff402cc01[m
+Author: Semyon_test_accaunt <160015795+Semyon7777@users.noreply.github.com>
+Date:   Sat Feb 21 19:00:43 2026 +0400
+
+    Fix connection timeout
+
+[33mcommit 9a1bdd9427a2ee6f978547f07c8a4dab7cd5be8c[m
+Author: Semyon_test_accaunt <160015795+Semyon7777@users.noreply.github.com>
+Date:   Sat Feb 21 18:03:45 2026 +0400
+
+    Initial server commit
